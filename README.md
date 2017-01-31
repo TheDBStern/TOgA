@@ -1,13 +1,13 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+
 
 ### What is this repository for? ###
 
 * Quick summary
+
 This is a pipeline for iterative assembly of targeted orthologous sequences with RNA-seq data
 * Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ### How do I get set up? ###
 
