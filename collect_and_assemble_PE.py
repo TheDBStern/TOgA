@@ -18,11 +18,11 @@ def run_bowtie2_idx(target_fasta, target_name):
 	os.system(cmd)
 
 def run_bowtie2_first(left_reads, target):
-	cmd = "bowtie2 -p 4 --local --gbar 1 --mp 4 -D 20 -R 3 -N 1 -L 20 -i S,1,0.50 -x temp/%s -U %s --al temp/mapped_left.fastq -S temp/alignments.sam"  % (target, left_reads)
+	cmd = "bowtie2 -p 16 --local --gbar 1 --mp 4 -D 20 -R 3 -N 1 -L 20 -i S,1,0.50 -x temp/%s -U %s --al temp/mapped_left.fastq -S temp/alignments.sam"  % (target, left_reads)
 	os.system(cmd)
 
 def run_bowtie2_next(left_reads, target):
-	cmd = "bowtie2 -p 4 --fast-local -x temp/%s -U %s --al temp/mapped_left.fastq -S temp/alignments.sam"  % (target, left_reads)
+	cmd = "bowtie2 -p 16 --end-to-end --very-sensitive -x temp/%s -U %s --al temp/mapped_left.fastq -S temp/alignments.sam"  % (target, left_reads)
 	os.system(cmd)
 	
 def best_blast(gene_name, Trinity_fasta, target_fasta):
@@ -58,7 +58,7 @@ for line in targets:
 	for i in range(0,int(iterations)):
 		if i == 0:
 			# loose bowtie and trinity
-			print 'Iteration 1'
+			print 'Iteration 0'
 			run_bowtie2_idx(fasta, gene)
 			print 'Aligning left reads to target'
 			run_bowtie2_first(left_reads, gene)
@@ -67,7 +67,7 @@ for line in targets:
 			print 'Assembling with Trinity'
 			run_trinity_first("temp/mapped_left.fastq", 'temp/right_mates.fastq', gene)
 		elif i != 0 and i != int(iterations)-1:
-			print 'Iteration %d' % i+1
+			print 'Iteration %s' % str(i)
 			# more stringent bowtie and trinity
 			run_bowtie2_idx("temp/%s.trinity.Trinity.fasta" % (gene), gene)
 			print 'Aligning left reads to new targets'
@@ -78,7 +78,7 @@ for line in targets:
 			run_trinity_next("temp/mapped_left.fastq", "temp/right_mates.fastq", gene)
 		else:
 			#final iteration with best blast
-			print 'Iteration %d' % i+1
+			print 'Iteration %s' % str(i)
 			run_bowtie2_idx("temp/%s.trinity.Trinity.fasta" % (gene), gene)
 			print 'Aligning left reads to new targets'
 			run_bowtie2_next(left_reads, gene)
@@ -89,5 +89,5 @@ for line in targets:
 			print 'Finding best contig'
 			best_blast(gene,"temp/%s.trinity.Trinity.fasta"%gene, fasta)
 
-	os.rename("temp/%s.trinity.Trinity.fasta" % gene, "%s.trinity.Trinity.fasta" % gene)
-	os.rename("temp/%s.besthit.fasta" % gene, "%s.besthit.fasta" % gene)
+	shutil.move("temp/%s.trinity.Trinity.fasta" % gene, "%s.trinity.Trinity.fasta" % gene)
+	shutil.move("temp/%s.besthit.fasta" % gene, "%s.besthit.fasta" % gene)
