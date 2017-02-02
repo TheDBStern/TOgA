@@ -89,5 +89,4 @@ for line in targets:
 			print 'Finding best contig'
 			best_blast(gene,"temp/%s.trinity.Trinity.fasta"%gene, fasta)
 
-	shutil.move("temp/%s.trinity.Trinity.fasta" % gene, "%s.trinity.Trinity.fasta" % gene)
-	shutil.move("temp/%s.besthit.fasta" % gene, "%s.besthit.fasta" % gene)
+	os.rename("temp/%s.trinity.Trinity.fasta" % gene, "%s.trinity.Trinity.fasta" % gene)
