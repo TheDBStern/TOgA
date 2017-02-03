@@ -54,7 +54,7 @@ if not os.path.isdir('./temp/'):
     os.mkdir('./temp/')
 for line in targets:
 	gene = line.split('\t')[0]
-	fasta = line.split('\t')[1]
+	fasta = line.split('\t')[1].strip('\n')
 	for i in range(0,int(iterations)):
 		if i == 0:
 			# loose bowtie and trinity
