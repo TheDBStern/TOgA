@@ -5,11 +5,11 @@ from Bio import SeqIO
 
 
 def run_trinity_first(left_reads, right_reads, target):
-	cmd = 'Trinity --max_memory 4G --seqType fq --left %s --right %s --SS_lib_type RF --min_contig_length 100 --CPU 4 --output temp/%s.trinity --full_cleanup' % (left_reads, right_reads, target)
+	cmd = 'Trinity --max_memory 40G --seqType fq --left %s --right %s --SS_lib_type RF --min_contig_length 100 --CPU 9 --output temp/%s.trinity --full_cleanup' % (left_reads, right_reads, target)
 	os.system(cmd)
 
 def run_trinity_next(left_reads, right_reads, target):
-	cmd = 'Trinity --max_memory 4G --seqType fq --left %s --right %s --SS_lib_type RF --min_contig_length 200 --CPU 4 --output temp/%s.trinity --full_cleanup' % (left_reads, right_reads, target)
+	cmd = 'Trinity --max_memory 40G --seqType fq --left %s --right %s --SS_lib_type RF --min_contig_length 200 --CPU 9 --output temp/%s.trinity --full_cleanup' % (left_reads, right_reads, target)
 	os.system(cmd)
 
 def run_bowtie2_idx(target_fasta, target_name):
@@ -21,7 +21,7 @@ def run_bowtie2_first(left_reads, target):
 	os.system(cmd)
 
 def run_bowtie2_next(left_reads, target):
-	cmd = 'bowtie2 -p 16 --sensitive-local -x temp/%s -U %s --al temp/mapped_left.fastq -S temp/alignments.sam'  % (target, left_reads)
+	cmd = 'bowtie2 -p 16 --very-fast-local -x temp/%s -U %s --al temp/mapped_left.fastq -S temp/alignments.sam'  % (target, left_reads)
 	os.system(cmd)
 	
 def best_blast(gene_name, Trinity_fasta, target_fasta):
@@ -74,7 +74,7 @@ with open(target_list, 'rU') as t:
 				print 'Getting mate pairs'
 				get_mates('temp/mapped_left.fastq', right_idx)
 				print 'Assembling with Trinity'
-				run_trinity_first('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
+				run_trinity_next('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
 				print 'Finding best contigs'
 				best_blast(target_gene,'temp/%s.trinity.Trinity.fasta'%target_gene, target_fasta)
 			if i > 1:
