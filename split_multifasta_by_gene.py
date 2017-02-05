@@ -9,14 +9,15 @@ requires biopython
 import sys, os
 from Bio import SeqIO
 
-input, binsize = sys.argv[1:]
+input = sys.argv[1]
 if not os.path.isdir('./Targets'):
     os.mkdir('./Targets')
 cwd = os.getcwd()
 outtext = open('TargetFile.txt', 'w')
-handle = open(input, "rU")
+handle = open(input)
 for record in SeqIO.parse(handle, "fasta"):
     gene = '_'.join(record.id.split('_')[:-1])
     output = 'Targets/'+gene+'.fasta'
-    SeqIO.write(record, output, "fasta")
+    outfile = open('Targets/'+gene+'.fasta', 'a')
+    SeqIO.write(record, outfile, "fasta")
     outtext.write(gene+'\t'+cwd+'/'+output+'\n')
