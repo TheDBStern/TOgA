@@ -54,40 +54,49 @@ with open(target_list, 'rU') as t:
 	for line in t:
 		target_gene = line.split('\t')[0]
 		target_fasta = line.split('\t')[1].strip('\n')
-		for i in range(0,int(iterations)):
-			if i == 0:
-				# loose bowtie and trinity
-				print '%s Iteration 0'%target_fasta
-				run_bowtie2_idx(target_fasta, target_gene)
-				print 'Aligning left reads to target'
-				run_bowtie2_first(left_reads, target_gene)
-				print 'Getting mate pairs'
-				get_mates('temp/mapped_left.fastq', right_idx)
-				print 'Assembling with Trinity'
-				run_trinity_first('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
-			if i == 1:
-				# map to all trinity contigs, more strict alignment and get best trinity contig
-				print 'Iteration 1'
-				run_bowtie2_idx('temp/%s.trinity.Trinity.fasta'%target_gene, target_gene)
-				print 'Aligning left reads to new targets'
-				run_bowtie2_next(left_reads, target_gene)
-				print 'Getting mate pairs'
-				get_mates('temp/mapped_left.fastq', right_idx)
-				print 'Assembling with Trinity'
-				run_trinity_next('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
-				print 'Finding best contigs'
-				best_blast(target_gene,'temp/%s.trinity.Trinity.fasta'%target_gene, target_fasta)
-			if i > 1:
-				# now just use best contigs for mapping
-				print 'Iteration %s' % str(i)
-				run_bowtie2_idx('temp/%s.besthit.fasta' % (target_gene), target_gene)
-				print 'Aligning left reads to new targets'
-				run_bowtie2_next(left_reads, target_gene)
-				print 'Getting mate pairs'
-				get_mates('temp/mapped_left.fastq', right_idx)
-				print 'Assembling with Trinity'
-				run_trinity_next('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
-				print 'Finding best contigs'
-				best_blast(target_gene,'temp/%s.trinity.Trinity.fasta'%target_gene, target_fasta)
-		os.rename('temp/%s.trinity.Trinity.fasta' % target_gene, '%s.trinity.Trinity.fasta' % target_gene)
-		os.rename('temp/%s.besthit.fasta' % target_gene, '%s.besthit.fasta' % target_gene)
+		try:
+			for i in range(0,int(iterations)):
+				if i == 0:
+					# loose bowtie and trinity
+					print '%s Iteration 0'%target_fasta
+					run_bowtie2_idx(target_fasta, target_gene)
+					print 'Aligning left reads to target'
+					run_bowtie2_first(left_reads, target_gene)
+					print 'Getting mate pairs'
+					get_mates('temp/mapped_left.fastq', right_idx)
+					print 'Assembling with Trinity'
+					run_trinity_first('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
+				if i == 1:
+					# map to all trinity contigs, more strict alignment and get best trinity contig
+					print 'Iteration 1'
+					run_bowtie2_idx('temp/%s.trinity.Trinity.fasta'%target_gene, target_gene)
+					print 'Aligning left reads to new targets'
+					run_bowtie2_next(left_reads, target_gene)
+					print 'Getting mate pairs'
+					get_mates('temp/mapped_left.fastq', right_idx)
+					print 'Assembling with Trinity'
+					run_trinity_next('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
+					print 'Finding best contigs'
+					best_blast(target_gene,'temp/%s.trinity.Trinity.fasta'%target_gene, target_fasta)
+				if i > 1:
+					# now just use best contigs for mapping
+					print 'Iteration %s' % str(i)
+					run_bowtie2_idx('temp/%s.besthit.fasta' % (target_gene), target_gene)
+					print 'Aligning left reads to new targets'
+					run_bowtie2_next(left_reads, target_gene)
+					print 'Getting mate pairs'
+					get_mates('temp/mapped_left.fastq', right_idx)
+					print 'Assembling with Trinity'
+					run_trinity_next('temp/mapped_left.fastq', 'temp/right_mates.fastq', target_gene)
+					print 'Finding best contigs'
+					best_blast(target_gene,'temp/%s.trinity.Trinity.fasta'%target_gene, target_fasta)
+			os.rename('temp/%s.trinity.Trinity.fasta' % target_gene, '%s.trinity.Trinity.fasta' % target_gene)
+			os.rename('temp/%s.besthit.fasta' % target_gene, '%s.besthit.fasta' % target_gene)
+		except:
+			print 'Found no contigs'
+			try:
+				os.rename('temp/%s.trinity.Trinity.fasta' % target_gene, '%s.trinity.Trinity.fasta' % target_gene)
+				os.rename('temp/%s.besthit.fasta' % target_gene, '%s.besthit.fasta' % target_gene)
+				continue
+			except:
+				continue
