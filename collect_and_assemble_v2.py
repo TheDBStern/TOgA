@@ -41,9 +41,12 @@ def get_mates(mapped_left, right_idx):
 	output = open('temp/right_mates.fastq', 'w')
 	left = SeqIO.parse(mapped_left, 'fastq')
 	for seq in left:
-		right_id = seq.id.replace('/1','/2')
-		SeqIO.write(right_idx[right_id], output, 'fastq')
-		
+		if seq.id.endswith('/1'):
+			right_id = seq.id.replace('/1','/2')
+			SeqIO.write(right_idx[right_id], output, 'fastq')
+		else:
+			right_id = seq.id.replace(' 1:',' 2:')
+			SeqIO.write(right_idx[right_id], output, 'fastq')
 	
 target_list, left_reads, right_reads, iterations = sys.argv[1:]
 print 'Indexing reads...'
